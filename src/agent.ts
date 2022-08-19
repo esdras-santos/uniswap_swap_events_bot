@@ -7,6 +7,7 @@ import {
   FindingSeverity,
   FindingType,
   LogDescription,
+  ethers
 } from "forta-agent";
 
 import {UNISWAP_FACTORY_ABI, SWAP_LOG} from "./utils";
@@ -20,7 +21,7 @@ export function provideHandleTransaction(factoryAbi: string, swapLog: string) : 
 
     // verify if the log is emmitted by one of the pools of uniswap 
     swapLogs.forEach((log)=>{
-
+      log.args.
       log.address
     })
 
