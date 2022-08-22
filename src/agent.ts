@@ -17,15 +17,13 @@ export function provideHandleTransaction(factoryAddress: string, swapLog: string
 
     // catch the swap event
     const swapLogs: LogDescription[] = txEvent.filterLog(swapLog)
- 
-    swapLogs.forEach(async (log)=>{
-      console.log(log.address)
-      // cathc the factory address in the pool
-      const factory = await getPoolFactory(log.address)
 
+    for(const log of swapLogs){
+      // cattch the factory address and fee in the pool
+      const [factory,fee] = await getPoolFactory(log.address)
       // compare with the UniswapV3 factory address and then push to findings
-      if(factory === factoryAddress){
-        const { agentId, metadata, chainIds } = log.args;
+      if(factory.toLowerCase() === factoryAddress.toLowerCase()){
+        const { sender, recipient, amount0, amount1} = log.args
         
         findings.push(
           Finding.fromObject({
@@ -36,14 +34,16 @@ export function provideHandleTransaction(factoryAddress: string, swapLog: string
             type: FindingType.Info,
             protocol: "uniswap-v3",
             metadata: {
-              agentId: agentId.toString(),
-              metadata,
-              chainIds: chainIds.toString(),
+              sender: sender.toString(),
+              recipient,
+              amount0: amount0.toString(),
+              amount1: amount1.toString(),
+              fee: fee.toString()
             },
           })
         );
       }
-    })
+    }
 
     return findings
   }
