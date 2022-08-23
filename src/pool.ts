@@ -4,7 +4,13 @@ import {getEthersProvider} from "forta-agent";
 
 export async function getPoolFactory(poolAddress: string): Promise<[string, string]> {
   const poolContract = new ethers.Contract(poolAddress, IUniswapV3PoolABI, getEthersProvider())
-  const factory = await poolContract.factory()
-  const fee = await poolContract.fee()
+  let factory;
+  let fee;
+  try{
+    factory = await poolContract.factory()
+    fee = await poolContract.fee()
+  } catch (e){
+    return  ["0x00", "0"] 
+  }
   return [factory.toString(), fee.toString()]
 }

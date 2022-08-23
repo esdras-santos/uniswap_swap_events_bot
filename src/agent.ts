@@ -34,8 +34,9 @@ export function provideHandleTransaction(factoryAddress: string, swapLog: string
             type: FindingType.Info,
             protocol: "uniswap-v3",
             metadata: {
-              sender: sender.toString(),
-              recipient,
+              pool: log.address.toLowerCase(),
+              sender: sender.toString().toLowerCase(),
+              recipient: recipient.toString().toLowerCase(),
               amount0: amount0.toString(),
               amount1: amount1.toString(),
               fee: fee.toString()
