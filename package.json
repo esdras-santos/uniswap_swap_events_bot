@@ -1,12 +1,14 @@
 {
-  "name": "forta-agent-starter",
+  "name": "forta-swap-bot",
   "version": "0.0.1",
-  "description": "Forta Agent Typescript starter project",
+  "description": "Forta Bot to detect every swap that occurs in UniswapV3 protocol",
+  "repository": "https://github.com/esdras-santos/uniswap_swap_events_bot",
   "chainIds": [
     1
   ],
   "scripts": {
     "build": "tsc",
+    "format": "prettier --write \"src/**/*.ts\"",
     "start": "npm run start:dev",
     "start:dev": "nodemon --watch src --watch forta.config.json -e js,ts,json  --exec \"npm run build && forta-agent run\"",
     "start:prod": "forta-agent run --prod",
@@ -25,14 +27,15 @@
   },
   "dependencies": {
     "@uniswap/v3-core": "^1.0.1",
-    "forta-agent": "^0.1.9",
-    "forta-agent-tools": "^3.0.0"
+    "forta-agent": "^0.1.9"
   },
   "devDependencies": {
     "@types/jest": "^27.0.1",
     "@types/nodemon": "^1.19.0",
+    "forta-agent-tools": "^3.0.0",
     "jest": "^27.0.6",
     "nodemon": "^2.0.8",
+    "prettier": "^2.7.1",
     "ts-jest": "^27.0.3",
     "typescript": "^4.3.4"
   }
