@@ -5,6 +5,7 @@ import { SWAP_LOG, UNISWAP_FACTORY_ADDRESS } from "./utils";
 import { TestTransactionEvent } from "forta-agent-tools/lib/test";
 import { createAddress } from "forta-agent-tools";
 
+jest.setTimeout(100000)
 describe("UniswapV3 Swap event bot", () => {
   let handleTransaction: HandleTransaction;
   let swapEvent: Interface;
@@ -15,6 +16,8 @@ describe("UniswapV3 Swap event bot", () => {
     pool: string;
     sender: string;
     recipient: string;
+    token0: string;
+    token1: string;
     amount0: string;
     amount1: string;
     fee: string;
@@ -32,6 +35,8 @@ describe("UniswapV3 Swap event bot", () => {
         pool: metadata.pool,
         sender: metadata.sender,
         recipient: metadata.recipient,
+        token0: metadata.token0,
+        token1: metadata.token1,
         amount0: metadata.amount0,
         amount1: metadata.amount1,
         fee: metadata.fee,
@@ -72,25 +77,80 @@ describe("UniswapV3 Swap event bot", () => {
     expect(findings).toStrictEqual([]);
   });
 
+  it("return and detect multiple Swap events", async () => {
+    let findings: Finding[];
+    let txEvent: TestTransactionEvent;
+
+    txEvent = new TestTransactionEvent()
+      .addEventLog(swapEvent.getEvent("Swap"), pool, [
+        createAddress("0x10"),
+        createAddress("0x11"),
+        10,
+        20,
+        256,
+        256,
+        256,
+      ])
+      .addEventLog(swapEvent.getEvent("Swap"), pool, [
+        createAddress("0x12"),
+        createAddress("0x13"),
+        10,
+        20,
+        256,
+        256,
+        256,
+      ])
+
+    findings = await handleTransaction(txEvent);
+
+    let metadata1: mockMetadata = {
+      pool: pool.toLowerCase(),
+      sender: createAddress("0x10"),
+      recipient: createAddress("0x11"),
+      token0: "0x6b175474e89094c44da98b954eedeac495271d0f",
+      token1: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      amount0: "10",
+      amount1: "20",
+      fee: "100",
+    };
+
+    let metadata2: mockMetadata = {
+      pool: pool.toLowerCase(),
+      sender: createAddress("0x12"),
+      recipient: createAddress("0x13"),
+      token0: "0x6b175474e89094c44da98b954eedeac495271d0f",
+      token1: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      amount0: "10",
+      amount1: "20",
+      fee: "100",
+    };
+
+    expect(findings).toStrictEqual([mockFinding(metadata1), mockFinding(metadata2)]);
+  });
+
   it("return Swap event when is a UniswapV3 pool who emmited the event", async () => {
     let findings: Finding[];
     let txEvent: TestTransactionEvent;
 
-    txEvent = new TestTransactionEvent().addEventLog(swapEvent.getEvent("Swap"), pool, [
-      createAddress("0x10"),
-      createAddress("0x11"),
-      10,
-      20,
-      256,
-      256,
-      256,
-    ]);
+    txEvent = new TestTransactionEvent()
+      .addEventLog(swapEvent.getEvent("Swap"), pool, [
+        createAddress("0x10"),
+        createAddress("0x11"),
+        10,
+        20,
+        256,
+        256,
+        256,
+      ])
+
     findings = await handleTransaction(txEvent);
 
     let metadata: mockMetadata = {
       pool: pool.toLowerCase(),
       sender: createAddress("0x10"),
       recipient: createAddress("0x11"),
+      token0: "0x6b175474e89094c44da98b954eedeac495271d0f",
+      token1: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       amount0: "10",
       amount1: "20",
       fee: "100",

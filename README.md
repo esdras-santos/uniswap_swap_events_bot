@@ -1,8 +1,8 @@
-# Bot Deployment Challenge
+# Challenge 2: Uniswap Swap Events
 
 ## Description
 
-This bot detects every time a Swap occurs in UniswapV3 protocol
+This bot detects every time a `Swap` occurs in UniswapV3 protocol
 
 ## Supported Chains
 
@@ -11,13 +11,15 @@ This bot detects every time a Swap occurs in UniswapV3 protocol
 ## Alerts
 
 - UNISWAP-SWAP-EVENT
-  - Fired when a Swap Event is emmited by UniswapV3 protocol 
+  - Fired when a `Swap` Event is emitted by UniswapV3 protocol 
   - Severity is always set to "info" 
   - Type is always set to "info" 
   - Metadata fields
-    - `pool`: pool that emmited the Swap Event
-    - `sender`: account that did the Swap
+    - `pool`: pool that emitted the `Swap` Event
+    - `sender`: account that did the `Swap`
     - `recipient`: account that receive the swaped amount
+    - `token0`: first token of the pool
+    - `token1`: second token of the pool
     - `amount0`: amount of token0
     - `amount1`: amount of token1
     - `fee`: fee of the pool 
