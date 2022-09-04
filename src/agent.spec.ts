@@ -5,7 +5,6 @@ import { SWAP_LOG, UNISWAP_FACTORY_ADDRESS } from "./utils";
 import { TestTransactionEvent } from "forta-agent-tools/lib/test";
 import { createAddress } from "forta-agent-tools";
 
-jest.setTimeout(100000)
 describe("UniswapV3 Swap event bot", () => {
   let handleTransaction: HandleTransaction;
   let swapEvent: Interface;
@@ -63,7 +62,7 @@ describe("UniswapV3 Swap event bot", () => {
       256,
     ]);
     findings = await handleTransaction(txEvent);
-
+    
     expect(findings).toStrictEqual([]);
   });
 
