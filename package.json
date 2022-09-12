@@ -26,7 +26,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "@uniswap/v3-core": "^1.0.1",
     "forta-agent": "^0.1.9"
   },
   "devDependencies": {

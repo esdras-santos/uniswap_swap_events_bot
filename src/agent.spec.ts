@@ -7,9 +7,10 @@ import { createAddress } from "forta-agent-tools";
 
 describe("UniswapV3 Swap event bot", () => {
   let handleTransaction: HandleTransaction;
-  let swapEvent: Interface;
+  let events: Interface;
   let pool: string = "0x5777d92f208679DB4b9778590Fa3CAB3aC9e2168";
   let mockPool: string = createAddress("0x23");
+  let mockEvent: string = "event Mock(address indexed mocked)";
 
   type mockMetadata = {
     pool: string;
@@ -44,15 +45,15 @@ describe("UniswapV3 Swap event bot", () => {
   };
 
   beforeAll(() => {
-    swapEvent = new Interface([SWAP_LOG]);
-    handleTransaction = provideHandleTransaction(UNISWAP_FACTORY_ADDRESS, SWAP_LOG);
+    events = new Interface(SWAP_LOG);
+    handleTransaction = provideHandleTransaction(SWAP_LOG[0]);
   });
 
   it("return empty when is not a UniswapV3 pool", async () => {
     let findings: Finding[];
     let txEvent: TestTransactionEvent;
 
-    txEvent = new TestTransactionEvent().addEventLog(swapEvent.getEvent("Swap"), mockPool, [
+    txEvent = new TestTransactionEvent().addEventLog(events.getEvent("Swap"), mockPool, [
       createAddress("0x10"),
       createAddress("0x11"),
       10,
@@ -62,7 +63,7 @@ describe("UniswapV3 Swap event bot", () => {
       256,
     ]);
     findings = await handleTransaction(txEvent);
-    
+
     expect(findings).toStrictEqual([]);
   });
 
@@ -81,16 +82,8 @@ describe("UniswapV3 Swap event bot", () => {
     let txEvent: TestTransactionEvent;
 
     txEvent = new TestTransactionEvent()
-      .addEventLog(swapEvent.getEvent("Swap"), pool, [
-        createAddress("0x10"),
-        createAddress("0x11"),
-        10,
-        20,
-        256,
-        256,
-        256,
-      ])
-      .addEventLog(swapEvent.getEvent("Swap"), pool, [
+      .addEventLog(events.getEvent("Swap"), pool, [createAddress("0x10"), createAddress("0x11"), 10, 20, 256, 256, 256])
+      .addEventLog(events.getEvent("Swap"), pool, [
         createAddress("0x12"),
         createAddress("0x13"),
         10,
@@ -98,7 +91,7 @@ describe("UniswapV3 Swap event bot", () => {
         256,
         256,
         256,
-      ])
+      ]);
 
     findings = await handleTransaction(txEvent);
 
@@ -131,16 +124,15 @@ describe("UniswapV3 Swap event bot", () => {
     let findings: Finding[];
     let txEvent: TestTransactionEvent;
 
-    txEvent = new TestTransactionEvent()
-      .addEventLog(swapEvent.getEvent("Swap"), pool, [
-        createAddress("0x10"),
-        createAddress("0x11"),
-        10,
-        20,
-        256,
-        256,
-        256,
-      ])
+    txEvent = new TestTransactionEvent().addEventLog(events.getEvent("Swap"), pool, [
+      createAddress("0x10"),
+      createAddress("0x11"),
+      10,
+      20,
+      256,
+      256,
+      256,
+    ]);
 
     findings = await handleTransaction(txEvent);
 
@@ -156,5 +148,19 @@ describe("UniswapV3 Swap event bot", () => {
     };
 
     expect(findings).toStrictEqual([mockFinding(metadata)]);
+  });
+
+  it("return no findings when another event is emitted from Uniswap", async () => {
+    let findings: Finding[];
+    let txEvent: TestTransactionEvent;
+
+    txEvent = new TestTransactionEvent().addEventLog(
+      events.getEvent("IncreaseObservationCardinalityNext"),
+      pool,
+      [10, 20]
+    );
+
+    findings = await handleTransaction(txEvent);
+    expect(findings).toStrictEqual([]);
   });
 });
