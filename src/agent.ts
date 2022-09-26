@@ -19,7 +19,7 @@ export function provideHandleTransaction(swapLog: string): HandleTransaction {
 
     for (const log of swapLogs) {
       const details = await getPoolDetails(log.address);
-      let address = "0x00";
+      let address
       if (details.token0 != "0x00") {
         address = addressFromSalt(details.token0, details.token1, details.fee);
         if (address.toLowerCase() === log.address.toLowerCase()) {
@@ -53,5 +53,5 @@ export function provideHandleTransaction(swapLog: string): HandleTransaction {
 }
 
 export default {
-  handleTransaction: provideHandleTransaction(SWAP_LOG[0]),
+  handleTransaction: provideHandleTransaction(SWAP_LOG),
 };

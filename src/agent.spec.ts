@@ -10,7 +10,7 @@ describe("UniswapV3 Swap event bot", () => {
   let events: Interface;
   let pool: string = "0x5777d92f208679DB4b9778590Fa3CAB3aC9e2168";
   let mockPool: string = createAddress("0x23");
-  let mockEvent: string = "event Mock(address indexed mocked)";
+  let irrelevantEvent = "event IncreaseObservationCardinalityNext(uint16 observationCardinalityNextOld, uint16 observationCardinalityNextNew)"
 
   type mockMetadata = {
     pool: string;
@@ -45,7 +45,7 @@ describe("UniswapV3 Swap event bot", () => {
   };
 
   beforeAll(() => {
-    events = new Interface(SWAP_LOG);
+    events = new Interface([SWAP_LOG, irrelevantEvent]);
     handleTransaction = provideHandleTransaction(SWAP_LOG[0]);
   });
 
