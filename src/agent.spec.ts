@@ -46,7 +46,7 @@ describe("UniswapV3 Swap event bot", () => {
 
   beforeAll(() => {
     events = new Interface([SWAP_LOG, irrelevantEvent]);
-    handleTransaction = provideHandleTransaction(SWAP_LOG[0]);
+    handleTransaction = provideHandleTransaction(SWAP_LOG);
   });
 
   it("return empty when is not a UniswapV3 pool", async () => {
@@ -77,7 +77,7 @@ describe("UniswapV3 Swap event bot", () => {
     expect(findings).toStrictEqual([]);
   });
 
-  it("return and detect multiple Swap events", async () => {
+  it("detect multiple Swap events", async () => {
     let findings: Finding[];
     let txEvent: TestTransactionEvent;
 
